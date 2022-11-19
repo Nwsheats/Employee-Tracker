@@ -38,5 +38,5 @@ VALUES (1, "Tony", "Khan" 1, 1),
        (12, "Daniel", "Garcia", 10, NULL),
        (13, "William", "Regal", 11, 6),
        (14, "Jon", "Moxley", 12, NULL),
-       (14, "Bryan", "Danielson", 12, NULL),
-       (14, "Wheeler", "Yuta", 12, NULL);
+       (15, "Bryan", "Danielson", 12, NULL),
+       (16, "Wheeler", "Yuta", 12, NULL);
