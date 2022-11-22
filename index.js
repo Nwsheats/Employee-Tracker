@@ -4,17 +4,17 @@ const cTable = require('console.table');
 const db = require('./db/database');
 
 
-const viewAllEmployees = () => {
-    return db.promise().query('SELECT * FROM employee');
-}
+// const viewAllEmployees = () => {
+//     return db.promise().query('SELECT * FROM employee');
+// }
 
 const inquiry = () => {
     inquirer.prompt([
         {
-               type: 'list',
-               message: 'What would you like to do?',
-               name: 'menu',
-               choices: [
+            type: 'list',
+            message: 'What would you like to do?',
+            name: 'menu',
+            choices: [
             {
                 name: 'View All Employees',
                 value: 'View_Employees'
@@ -49,9 +49,10 @@ const inquiry = () => {
             }]
         
         }
-    ]).then(data => {
+])
+    .then(data => {
         let choice = data.choices;
-        console.table(choice)
+        console.log(choice)
         switch (choice) {
             case 'View_Employees':
                 viewEmployees();
@@ -75,7 +76,7 @@ const inquiry = () => {
                 addDept();
                 break;
             default:
-                quit();
+                quitMenu();
         }
     })
 }
@@ -132,7 +133,8 @@ function addEmployee(managerListArray) {
             message: "Who is the employee's manager",
             name: 'emanager',
             choices: managerListArray
-        }]), db.addNewEmployee()
+        }]) 
+        db.addNewEmployee()
         .then(([table]) => {
             let employees = table;
             console.table(employees);
@@ -157,8 +159,8 @@ function addRole(roleDeptArray) {
             message: "Which department does the role belong to?",
             name: 'rdept',
             choices: roleDeptArray
-        },
-        ]), db.addEmployeeRole()
+        }]) 
+        db.addEmployeeRole()
         .then(([table]) => {
             let newRole = table;
             console.table(newRole);
@@ -173,8 +175,7 @@ function addDept() {
             type: 'input',
             message: "What is the name of the department?",
             name: 'dname'
-        }
-        ]), db.addEmployeeDept()
+        }]), db.addEmployeeDept()
         .then(([table]) => {
             let newDept = table;
             console.table(newDept);
@@ -197,8 +198,7 @@ function updateRole(employeeList, rolesList) {
             message: "What role do you want to assign the selected employee?",
             name: 'erole',
             choices: rolesList
-        }
-    ]), db.updateEmployeeRole()
+        }]), db.updateEmployeeRole()
     .then(([table]) => {
         let update = table;
         console.table(update);
@@ -206,6 +206,8 @@ function updateRole(employeeList, rolesList) {
     .then(() => inquiry())
 }
 
-
+function quitMenu() {
+    return
+}
 
 inquiry();

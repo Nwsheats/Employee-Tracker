@@ -2,8 +2,8 @@ INSERT INTO department (id, dept_name)
 VALUES (1, "Operations"),
        (2, "Sales"),
        (3, "Engineering"),
-       (4, "Billing")
-       (5, "Marketing")
+       (4, "Billing"),
+       (5, "Marketing"),
        (6, "Legal");
 
 
@@ -23,7 +23,7 @@ VALUES (1, "Operations Lead", 200000, 1),
 
 
 INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
-VALUES (1, "Tony", "Khan" 1, 1),
+VALUES (1, "Tony", "Khan", 1, 1),
        (2, "Tony", "Schiavone", 2, NULL),
        (3, "Britt", "Baker", 3, 2),
        (4, "Jamie", "Hayder", 4, NULL),
@@ -31,7 +31,7 @@ VALUES (1, "Tony", "Khan" 1, 1),
        (5, "Kenny", "Omega", 5, 3),
        (6, "Matt", "Jackson", 6, NULL),
        (7, "Nick", "Jackson", 6, NULL),
-       (8, "Andrade", "El Idolo" 7, 4),
+       (8, "Andrade", "El Idolo", 7, 4),
        (9, "Matt", "Hardy", 8, NULL),
        (10, "Chris", "Jericho", 9, 5),
        (11, "Sammy", "Guevara", 10, NULL),

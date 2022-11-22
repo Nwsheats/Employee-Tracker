@@ -13,7 +13,7 @@ class Database {
 
     addNewEmployee() {
         return this.connection.promise().query(
-            ""
+            "INSERT INTO employee"
     )}
     
     updateEmployeeRole() {
@@ -23,27 +23,22 @@ class Database {
 
     viewAllRoles() {
         return this.connection.promise().query(
-            ""
+            "SELECT * FROM roles"
     )}
 
     addEmployeeRole() {
         return this.connection.promise().query(
-            ""
+            "INSERT INTO roles"
     )}
 
     viewAllDept() {
         return this.connection.promise().query(
-            ""
+            "SELECT * FROM department"
     )}
 
     addEmployeeDept() {
         return this.connection.promise().query(
-            ""
-    )}
-
-    quitMenu() {
-        return this.connection.promise().query(
-            ""
+            "INSERT INTO department"
     )}
 
     }
