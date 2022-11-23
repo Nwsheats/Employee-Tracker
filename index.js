@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const cTable = require('console.table');
+require('console.table');
+
 const db = require('./db/database');
 
 
@@ -51,13 +52,13 @@ const inquiry = () => {
         }
 ])
     .then(data => {
-        let choice = data.choices;
-        console.log(choice)
+        let choice = data.menu;
+        console.log("string", choice)
         switch (choice) {
             case 'View_Employees':
                 viewEmployees();
                 break;
-            case 'Add_Employee':
+            case 'Add_Employees':
                 addEmployee();
                 break;
             case 'Update_Role':
@@ -85,6 +86,7 @@ function viewEmployees() {
     db.viewAllEmployees()
     .then(([table]) => {
         let employees = table;
+        console.log(employees);
         console.table(employees);
     })
     .then(() => inquiry())
@@ -114,30 +116,36 @@ function addEmployee(managerListArray) {
         {
             type: 'input',
             message: "What is the employee's first name?",
-            name: 'fname'
+            name: 'first_name'
         },
         {
             type: 'input',
             message: "What is the employee's last name?",
-            name: 'lname'
-        },
+            name: 'last_name'
+        }])
+        .then((data) => {
+            db.viewAllRoles()
+            // make the rest of this function as a .then
+        }
         {
             type: 'list',
             message: "What is the employee's role",
-            name: 'erole',
+            name: 'role_id',
             choices: ["Operations Lead", "Operations Specialist", "Lead Engineer", "Software Engineer", "Sales Lead", "Sales Associate", "Billing Lead", "Billing Specialist", "Marketing Lead",
             "Marketing Associate", "Legal Head", "Lawyer"]
         },
-        {
-            type: 'list',
-            message: "Who is the employee's manager",
-            name: 'emanager',
-            choices: managerListArray
-        }]) 
-        db.addNewEmployee()
-        .then(([table]) => {
+        // {
+        //     type: 'list',
+        //     message: "Who is the employee's manager",
+        //     name: 'emanager',
+        //     choices: managerListArray
+            
+        // }
+        ]) 
+        .then((table) => {
             let employees = table;
             console.table(employees);
+            db.addNewEmployee(employees);
         })
         .then(() => inquiry())
 }
