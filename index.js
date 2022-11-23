@@ -125,15 +125,22 @@ function addEmployee(managerListArray) {
         }])
         .then((data) => {
             db.viewAllRoles()
-            // make the rest of this function as a .then
+            .then(data => {
+                console.log(data)
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        message: "What is the employee's role",
+                        name: 'role_id',
+                        choices: data.title
+                    }
+                ])
+            }).then(res => {
+                console.log(res)
+
+            })
         }
-        {
-            type: 'list',
-            message: "What is the employee's role",
-            name: 'role_id',
-            choices: ["Operations Lead", "Operations Specialist", "Lead Engineer", "Software Engineer", "Sales Lead", "Sales Associate", "Billing Lead", "Billing Specialist", "Marketing Lead",
-            "Marketing Associate", "Legal Head", "Lawyer"]
-        },
+            // make the rest of this function as a .then
         // {
         //     type: 'list',
         //     message: "Who is the employee's manager",
@@ -141,12 +148,12 @@ function addEmployee(managerListArray) {
         //     choices: managerListArray
             
         // }
-        ]) 
-        .then((table) => {
-            let employees = table;
-            console.table(employees);
-            db.addNewEmployee(employees);
-        })
+        ) 
+        // .then((table) => {
+        //     let employees = table;
+        //     console.table(employees);
+        //     db.addNewEmployee(employees);
+        // })
         .then(() => inquiry())
 }
 
