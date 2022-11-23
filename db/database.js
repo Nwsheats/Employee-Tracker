@@ -36,9 +36,9 @@ class Database {
             "SELECT * FROM department"
     )}
 
-    addEmployeeDept() {
+    addEmployeeDept(newDept) {
         return this.connection.promise().query(
-            "INSERT INTO department"
+            "INSERT INTO department SET ?", newDept
     )}
 
     }

@@ -69,7 +69,7 @@ const inquiry = () => {
             case 'View_Departments':
                 viewDept();
                 break;
-            case 'Add Department':
+            case 'Add_Department':
                 addDept();
                 break;
             default:
@@ -82,7 +82,6 @@ function viewEmployees() {
     db.viewAllEmployees()
     .then(([table]) => {
         let employees = table;
-        console.log(employees);
         console.table(employees);
     })
     .then(() => inquiry())
@@ -226,37 +225,81 @@ function addDept() {
         {
             type: 'input',
             message: "What is the name of the department?",
-            name: 'dname'
-        }]), db.addEmployeeDept()
-        .then(([table]) => {
-            let newDept = table;
-            console.table(newDept);
-        })
-        .then(() => inquiry())
-}
+            name: 'dept_name'
+        }
+        ]).then((data) => {
+            console.log(data);
+            let deptData = data;
+            db.addEmployeeDept(deptData)
+            .then(() => {
+                console.log(`Added successfully!`)
+            })
+            .then(() => inquiry())
+            })
+            }
 
 
 
-function updateRole(employeeList, rolesList) {
-    inquirer.prompt([
+
+function updateRole() {
+    db.viewAllEmployees()
+    .then(([data]) => {
+        console.log('data', data);
+        let employeeData = data;
+        const employeeMap = employeeData.map(({ first_name, last_name, role_id }) => ({
+            name: `${first_name} ${last_name}`,
+            value: role_id,
+        }))
+        console.log('employee', employeeMap);
+        inquirer.prompt([
         {
             type: 'list',
             message: "Which employee's role do you want to update?",
-            name: 'elist',
-            choices: employeeList
+            name: 'name',
+            choices: employeeMap
         },
-        {
-            type: 'list',
-            message: "What role do you want to assign the selected employee?",
-            name: 'erole',
-            choices: rolesList
-        }]), db.updateEmployeeRole()
-    .then(([table]) => {
-        let update = table;
-        console.table(update);
-    })
-    .then(() => inquiry())
-}
+    ]).then(res => {
+        console.log("res", res)
+        let roleID = res.role_id;
+        db.viewAllRoles()
+            .then(([data]) => {
+                console.log('data', data);
+                let roleData = data;
+                const roleMap = roleData.map(({ title, department_id }) => ({
+                    name: title,
+                    value: department_id,
+                }))
+                console.log('role', roleMap);
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        message: "What role do you want to assign the selected employee?",
+                        name: 'title',
+                        choices: roleMap
+                    }    
+                ]).then(res => {
+                    console.log('res', res)
+                    // let deptID = res.department_id;
+                    // const updateRole = {
+                    //     title: roleName,
+                    //     salary: roleSalary,
+                    //     department_id: deptID,
+                    // }
+                    // db.addEmployeeRole(newRole);
+                }).then(() => {
+                    // console.log(`${roleName} added successfully!`)
+                })
+                    .then(() => inquiry())
+        })
+    })}
+)}
+    
+    // db.updateEmployeeRole()
+    // .then(([table]) => {
+    //     let update = table;
+    //     console.table(update);
+    // })
+    // .then(() => inquiry())
 
 function quitMenu() {
     process.exit()
