@@ -1,13 +1,9 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+const { map } = require('rxjs');
 require('console.table');
-
 const db = require('./db/database');
 
-
-// const viewAllEmployees = () => {
-//     return db.promise().query('SELECT * FROM employee');
-// }
 
 const inquiry = () => {
     inquirer.prompt([
@@ -111,7 +107,7 @@ function viewDept() {
 }
 
 
-function addEmployee(managerListArray) {
+function addEmployee() {
     inquirer.prompt([
         {
             type: 'input',
@@ -124,65 +120,106 @@ function addEmployee(managerListArray) {
             name: 'last_name'
         }])
         .then((data) => {
+            let firstName = data.first_name;
+            let lastName = data.last_name;
+            console.log("string", firstName, lastName);
             db.viewAllRoles()
-            .then(data => {
-                console.log(data)
+            .then(([data]) => {
+                console.log("hello", data)
+                let roleData = data
+                const roleMap = roleData.map(({ id, title }) => ({
+                    name: title,
+                    value: id
+                }))
+                console.log('stuff', roleMap);
                 inquirer.prompt([
                     {
                         type: 'list',
                         message: "What is the employee's role",
                         name: 'role_id',
-                        choices: data.title
+                        choices: roleMap
                     }
-                ])
-            }).then(res => {
-                console.log(res)
+                ]).then(res => {
+                    console.log("res", res)
+                    let roleID = res.role_id;
+                    db.viewAllEmployees()
+                        .then(([data]) => {
+                            console.log('data', data);
+                            let managerData = data;
+                            const managerMap = managerData.map(({ first_name, last_name, manager_id }) => ({
+                                name: `${first_name} ${last_name}`,
+                                value: manager_id,
+                            }))
+                            console.log('manager', managerMap);
+                            inquirer.prompt([
+                                {
+                                    type: 'list',
+                                    message: "Who is the employee's manager",
+                                    name: 'emanager',
+                                    choices: managerMap
+                                }]).then(res => {
+                                    console.log('res2', res)
+                                    const newEmployee = {
+                                        first_name: firstName,
+                                        last_name: lastName,
+                                        role_id: roleID,
+                                        manager_id: res.emanager
+                                    }
+                                    console.log('newEmployee', newEmployee);
+                                    db.addNewEmployee(newEmployee)
 
-            })
-        }
-            // make the rest of this function as a .then
-        // {
-        //     type: 'list',
-        //     message: "Who is the employee's manager",
-        //     name: 'emanager',
-        //     choices: managerListArray
-            
-        // }
-        ) 
-        // .then((table) => {
-        //     let employees = table;
-        //     console.table(employees);
-        //     db.addNewEmployee(employees);
-        // })
-        .then(() => inquiry())
-}
+                                }).then(() => {
+                                    console.log(`${firstName} ${lastName} added successfully!`)
+                                })
+                                    .then(() => inquiry())
+                        })
+        })
+    })
+})}
 
-function addRole(roleDeptArray) {
+function addRole() {
     inquirer.prompt([
         {
             type: 'input',
             message: "What is the name of this role?",
-            name: 'rname'
+            name: 'title'
         },
         {
             type: 'input',
             message: "What is the salary of this role?",
-            name: 'rsalary'
-        },
-        {
-            type: 'list',
-            message: "Which department does the role belong to?",
-            name: 'rdept',
-            choices: roleDeptArray
-        }]) 
-        db.addEmployeeRole()
-        .then(([table]) => {
-            let newRole = table;
-            console.table(newRole);
+            name: 'salary'
+        }
+        ]).then((data) => {
+            let roleName = data.title;
+            let roleSalary = data.salary;
+            db.viewAllDept()
+            .then(([data]) => {
+                let deptData = data
+                const deptMap = deptData.map(({ id, dept_name }) => ({
+                    name: dept_name,
+                    value: id
+                }))
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        message: "Which department does the role belong to?",
+                        name: 'department_id',
+                        choices: deptMap
+                    }
+                ]).then(res => {
+                    let deptID = res.department_id;
+                    const newRole = {
+                        title: roleName,
+                        salary: roleSalary,
+                        department_id: deptID,
+                    }
+                    db.addEmployeeRole(newRole);
+                }).then(() => {
+                    console.log(`${roleName} added successfully!`)
+                })
+                    .then(() => inquiry())
         })
-        .then(() => inquiry())
-}
-
+    })}
 
 function addDept() {
     inquirer.prompt([
@@ -222,7 +259,7 @@ function updateRole(employeeList, rolesList) {
 }
 
 function quitMenu() {
-    return
+    process.exit()
 }
 
 inquiry();

@@ -11,9 +11,9 @@ class Database {
             "SELECT * FROM employee"
     )}
 
-    addNewEmployee() {
+    addNewEmployee(newEmployee) {
         return this.connection.promise().query(
-            "INSERT INTO employee"
+            "INSERT INTO employee SET ?", newEmployee
     )}
     
     updateEmployeeRole() {
@@ -26,9 +26,9 @@ class Database {
             "SELECT * FROM roles"
     )}
 
-    addEmployeeRole() {
+    addEmployeeRole(newRole) {
         return this.connection.promise().query(
-            "INSERT INTO roles"
+            "INSERT INTO roles SET ?", newRole
     )}
 
     viewAllDept() {
