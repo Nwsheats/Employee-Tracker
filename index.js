@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const { map } = require('rxjs');
 require('console.table');
 const db = require('./db/database');
 
@@ -49,7 +48,6 @@ const inquiry = () => {
 ])
     .then(data => {
         let choice = data.menu;
-        console.log("string", choice)
         switch (choice) {
             case 'View_Employees':
                 viewEmployees();
@@ -121,16 +119,13 @@ function addEmployee() {
         .then((data) => {
             let firstName = data.first_name;
             let lastName = data.last_name;
-            console.log("string", firstName, lastName);
             db.viewAllRoles()
             .then(([data]) => {
-                console.log("hello", data)
                 let roleData = data
                 const roleMap = roleData.map(({ id, title }) => ({
                     name: title,
                     value: id
                 }))
-                console.log('stuff', roleMap);
                 inquirer.prompt([
                     {
                         type: 'list',
@@ -139,17 +134,14 @@ function addEmployee() {
                         choices: roleMap
                     }
                 ]).then(res => {
-                    console.log("res", res)
                     let roleID = res.role_id;
                     db.viewAllEmployees()
                         .then(([data]) => {
-                            console.log('data', data);
                             let managerData = data;
                             const managerMap = managerData.map(({ first_name, last_name, manager_id }) => ({
                                 name: `${first_name} ${last_name}`,
                                 value: manager_id,
                             }))
-                            console.log('manager', managerMap);
                             inquirer.prompt([
                                 {
                                     type: 'list',
@@ -157,14 +149,12 @@ function addEmployee() {
                                     name: 'emanager',
                                     choices: managerMap
                                 }]).then(res => {
-                                    console.log('res2', res)
                                     const newEmployee = {
                                         first_name: firstName,
                                         last_name: lastName,
                                         role_id: roleID,
                                         manager_id: res.emanager
                                     }
-                                    console.log('newEmployee', newEmployee);
                                     db.addNewEmployee(newEmployee)
 
                                 }).then(() => {
@@ -228,7 +218,6 @@ function addDept() {
             name: 'dept_name'
         }
         ]).then((data) => {
-            console.log(data);
             let deptData = data;
             db.addEmployeeDept(deptData)
             .then(() => {
@@ -244,32 +233,27 @@ function addDept() {
 function updateRole() {
     db.viewAllEmployees()
     .then(([data]) => {
-        console.log('data', data);
         let employeeData = data;
-        const employeeMap = employeeData.map(({ first_name, last_name, role_id }) => ({
+        const employeeMap = employeeData.map(({ first_name, last_name, id }) => ({
             name: `${first_name} ${last_name}`,
-            value: role_id,
+            value: id,
         }))
-        console.log('employee', employeeMap);
         inquirer.prompt([
         {
             type: 'list',
             message: "Which employee's role do you want to update?",
-            name: 'name',
+            name: 'id',
             choices: employeeMap
         },
     ]).then(res => {
-        console.log("res", res)
-        let roleID = res.role_id;
+        let employeeID = res.id;
         db.viewAllRoles()
             .then(([data]) => {
-                console.log('data', data);
                 let roleData = data;
-                const roleMap = roleData.map(({ title, department_id }) => ({
+                const roleMap = roleData.map(({ title, id }) => ({
                     name: title,
-                    value: department_id,
+                    value: id,
                 }))
-                console.log('role', roleMap);
                 inquirer.prompt([
                     {
                         type: 'list',
@@ -278,28 +262,15 @@ function updateRole() {
                         choices: roleMap
                     }    
                 ]).then(res => {
-                    console.log('res', res)
-                    // let deptID = res.department_id;
-                    // const updateRole = {
-                    //     title: roleName,
-                    //     salary: roleSalary,
-                    //     department_id: deptID,
-                    // }
-                    // db.addEmployeeRole(newRole);
+                    db.updateEmployeeRole(employeeID, res.title);
                 }).then(() => {
-                    // console.log(`${roleName} added successfully!`)
+                    console.log(`Added successfully!`)
                 })
                     .then(() => inquiry())
         })
     })}
 )}
-    
-    // db.updateEmployeeRole()
-    // .then(([table]) => {
-    //     let update = table;
-    //     console.table(update);
-    // })
-    // .then(() => inquiry())
+
 
 function quitMenu() {
     process.exit()

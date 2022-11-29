@@ -16,9 +16,9 @@ class Database {
             "INSERT INTO employee SET ?", newEmployee
     )}
     
-    updateEmployeeRole() {
+    updateEmployeeRole(EID, RID) {
         return this.connection.promise().query(
-            ""
+            "UPDATE employee SET role_id = ? WHERE id = ?", [RID, EID]
     )}
 
     viewAllRoles() {
